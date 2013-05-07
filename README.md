@@ -3,9 +3,9 @@ RackPlannerAndroid
 
 Port of RackPlanner to Android (unfinished)
 
-The idea here is to use the SD card to store module zips and RackPlanner racks in the exact same way the desktop version of RackPlanner does. 
+The idea here is to use the SD card to store module zips and RackPlanner racks in the exact same way the desktop version of RackPlanner uses the local drive. 
 
-So it's probably best to try RackPlanner first and see how it wokrs
+So it's probably best to try RackPlanner first and see how it works
 
 I got all the graphics working for the Android. You can try it (the apk is in the /bin folder). 
 
