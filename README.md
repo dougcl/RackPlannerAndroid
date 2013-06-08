@@ -1,7 +1,7 @@
 RackPlannerAndroid
 ==================
 
-Port of RackPlanner to Android (unfinished)
+Port of RackPlanner to Android (unfinished). The target is v2.2 android-8.
 
 The idea here is to use the SD card to store module zips and RackPlanner racks in the exact same way the desktop version of RackPlanner uses the local drive. 
 
