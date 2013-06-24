@@ -39,7 +39,7 @@ public class RackPlannerActivity extends Activity {
     	if (v instanceof RackRow){
         	contextView = v;
     		//menu.setHeaderTitle("Module Menu");  
-        	menu.add(0, CANCEL, 0, "Cancel"); 
+        	//menu.add(0, CANCEL, 0, "Cancel"); 
     		menu.add(0, ADD_MODULE, 0, "Add Module"); 
     		if (frame.moduleSelected()){
     			menu.add(0, COPY_MODULE, 0, "Copy Selected Module");
@@ -48,7 +48,7 @@ public class RackPlannerActivity extends Activity {
 
     	} else if (menu.size() == 0){
     		//menu.setHeaderTitle("Rack Menu");
-    		menu.add(0, CANCEL, 0, "Cancel"); 
+    		//menu.add(0, CANCEL, 0, "Cancel"); 
     		menu.add(0, OPEN, 0, "Open");  
     		menu.add(0, SAVE, 0, "Save"); 
     		menu.add(0, SAVE_AS, 0, "Save As"); 
