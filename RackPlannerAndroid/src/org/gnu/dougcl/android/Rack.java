@@ -1,12 +1,17 @@
 package org.gnu.dougcl.android;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
@@ -66,11 +71,46 @@ public class Rack extends LinearLayout implements Scalable {
 	        	//Create default folders and default module zip from resources
 	            String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
 	            File newFolder = new File(extStorageDirectory + "/RackPlanner");
-	           // myNewFolder.mkdir();
+	            newFolder.mkdir();
 	            newFolder = new File(extStorageDirectory + "/RackPlanner/images");
-	           // myNewFolder.mkdir();
+	            newFolder.mkdir();
 	            newFolder = new File(extStorageDirectory + "/RackPlanner/euro_modules");
-	           // myNewFolder.mkdir();
+	            newFolder.mkdir();     
+	            try {
+	            	//Write out example background
+		            Bitmap bm = BitmapFactory.decodeResource( this.context.getResources(), R.drawable.euro_84hp);
+		            File imgFile = new File(extStorageDirectory + "/RackPlanner/images/euro_84hp.jpg");
+					FileOutputStream outStream = new FileOutputStream(imgFile);
+					bm.compress(Bitmap.CompressFormat.JPEG,100, outStream);
+				    outStream.flush();
+				    outStream.close();
+				    //Write out example module.
+				    InputStream is = this.context.getResources().openRawResource(R.raw.cwejman_mx_4s);
+				    File moduleZip = new File(extStorageDirectory + "/RackPlanner/euro_modules/Cwejman_E_MX-4S.zip");
+				    outStream = new FileOutputStream(moduleZip);
+				    int bufferSize = 1024;
+				    byte[] buffer = new byte[bufferSize];
+				    int len = 0;
+				    while ((len = is.read(buffer)) != -1) {
+				        outStream.write(buffer, 0, len);
+				    }
+				    outStream.flush();
+				    outStream.close();
+				    //Write out example rack.xml
+				    is = this.context.getResources().openRawResource(R.raw.rack);
+				    File rackFile = new File(extStorageDirectory + "/RackPlanner/rack.xml");
+				    outStream = new FileOutputStream(rackFile);
+				    buffer = new byte[bufferSize];
+				    len = 0;
+				    while ((len = is.read(buffer)) != -1) {
+				        outStream.write(buffer, 0, len);
+				    }
+				    outStream.flush();
+				    outStream.close();
+	            } catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 	        }
        } else {
     	   //No SD card. Create default rack from resources
@@ -91,9 +131,10 @@ public class Rack extends LinearLayout implements Scalable {
 		}
 		//For performance, call after adding rows, but before adding modules.
 		this.setScale(scale);
-		addModule("moduleZip",1, 40);
+		addModule("module_filename",1, 40);
 
 	}
+	
 	
 	public int getRows() {
 		return this.rows;

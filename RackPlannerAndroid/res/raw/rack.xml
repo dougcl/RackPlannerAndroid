@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rack>
+	<properties>
+		<scale>1.0</scale>
+		<rows>2</rows>
+		<cols>1</cols>
+		<imagesPath>./images</imagesPath>
+		<modulesPath>./euro_modules</modulesPath>
+		<rackImageFilename>euro_84HP.jpg</rackImageFilename>
+		<rackHP>84</rackHP>
+	</properties>
+	<modules>
+		<module>
+			<zipFilename>Cwejman_E_MX-4S.zip</zipFilename>
+			<row>1</row>
+			<col>1</col>
+		</module>
+	</modules>
+</rack>
