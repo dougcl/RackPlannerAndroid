@@ -53,11 +53,11 @@ public class Rack extends LinearLayout implements Scalable {
 		String state = Environment.getExternalStorageState();
 		if (Environment.MEDIA_MOUNTED.equals(state)) {
 			//Memory Card is present and mounted with read/write access
+			String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
 	        File dir = new File(Environment.getExternalStorageDirectory() + "/RackPlanner");
 	        if(!dir.exists() || !dir.isDirectory()) 
 	        {
-	        	//Create default folders and default module zip from resources
-	            String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
+	        	//Nothing exists. Create default folders and default module zip from resources
 	            File newFolder = new File(extStorageDirectory + "/RackPlanner");
 	            newFolder.mkdir();
 	            newFolder = new File(extStorageDirectory + "/RackPlanner/images");
@@ -110,8 +110,8 @@ public class Rack extends LinearLayout implements Scalable {
 				e.printStackTrace();
 			}
         	
-    		this.hp = this.rp.getRackHP() * this.rp.getCols();
-    		Drawable bg = this.getResources().getDrawable(R.drawable.euro_84hp);
+    		this.hp = this.rp.getRackHP() * this.rp.getCols(); //total rack width hp
+    		Drawable bg = Drawable.createFromPath(extStorageDirectory + "/RackPlanner/" + this.rp.getImagesPath() + "/" + this.rp.getRackImageFilename());
 
     		this.intrinsicWidth = bg.getIntrinsicWidth() * this.rp.getCols();
     		this.intrinsicHeight = bg.getIntrinsicHeight() * this.rp.getRows();
