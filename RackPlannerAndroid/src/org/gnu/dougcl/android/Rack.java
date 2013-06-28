@@ -24,15 +24,13 @@ import android.widget.RelativeLayout;
 public class Rack extends LinearLayout implements Scalable {
 	
 	private Context context;
+	private RackProperties rp;
 
-	private int rows;
-	private int cols;
-	private int hp;
-	
-	private int intrinsicHeight;
+	//derived properties
+	private int hp; //the total number of horizontal positions in this rack
+	private int intrinsicHeight; //based on the intrinsic dimensions of the bg image
 	private int intrinsicWidth;
-	
-	private double scale;
+	//private double scale;
 
 	public Rack(Context context) {
 		super(context);
@@ -50,24 +48,14 @@ public class Rack extends LinearLayout implements Scalable {
 	}
 	
 	public void load(String filename){
-		//Default is a 6U eurorack with an MX-4S in it.
-		rows = 2;
-		cols = 1;
-		double scale = 0.8;
-		int hp = 84;
-		this.hp = hp * cols;
-		Drawable bg = this.getResources().getDrawable(R.drawable.euro_84hp);
-		
+	
 		//read rack file from disk. If it's not there, create it.
 		String state = Environment.getExternalStorageState();
 		if (Environment.MEDIA_MOUNTED.equals(state)) {
 			//Memory Card is present and mounted with read/write access
 	        File dir = new File(Environment.getExternalStorageDirectory() + "/RackPlanner");
-	        if(dir.exists() && dir.isDirectory()) 
+	        if(!dir.exists() || !dir.isDirectory()) 
 	        {
-	           //Folder exists. Check for rack file.
-	        	
-	        } else {
 	        	//Create default folders and default module zip from resources
 	            String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
 	            File newFolder = new File(extStorageDirectory + "/RackPlanner");
@@ -84,7 +72,7 @@ public class Rack extends LinearLayout implements Scalable {
 					bm.compress(Bitmap.CompressFormat.JPEG,100, outStream);
 				    outStream.flush();
 				    outStream.close();
-				    //Write out example module.
+				    //Write out example module zip.
 				    InputStream is = this.context.getResources().openRawResource(R.raw.cwejman_mx_4s);
 				    File moduleZip = new File(extStorageDirectory + "/RackPlanner/euro_modules/Cwejman_E_MX-4S.zip");
 				    outStream = new FileOutputStream(moduleZip);
@@ -112,32 +100,41 @@ public class Rack extends LinearLayout implements Scalable {
 					e.printStackTrace();
 				}
 	        }
+	        
+        	//RackPlanner files should be available for loading.
+        	File rackFile = new File(dir.toString() + "/" + filename); 	
+        	try {
+				this.rp = new RackProperties(rackFile);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        	
+    		this.hp = this.rp.getRackHP() * this.rp.getCols();
+    		Drawable bg = this.getResources().getDrawable(R.drawable.euro_84hp);
+
+    		this.intrinsicWidth = bg.getIntrinsicWidth() * this.rp.getCols();
+    		this.intrinsicHeight = bg.getIntrinsicHeight() * this.rp.getRows();
+    		RackRow rr;
+    		for(int i = 1;i <= this.rp.getRows();i++){
+    			rr = new RackRow(this.getContext(), bg, hp, this.rp.getCols());
+    			this.addView(rr);
+    			rr.setId(this.getChildCount());
+    			Activity activity = (Activity)context;
+    			activity.registerForContextMenu(rr);
+    			rr.setOnTouchListener((OnTouchListener)this.getParent());
+    		}
+    		//For performance, call after adding rows, but before adding modules.
+    		this.setScale(this.rp.getScale());
+    		addModule("module_filename",1, 40);
        } else {
-    	   //No SD card. Create default rack from resources
+    	   //No SD card. What now?
        }
-		
-	
-
-		this.intrinsicWidth = bg.getIntrinsicWidth() * cols;
-		this.intrinsicHeight = bg.getIntrinsicHeight() * rows;
-		RackRow rr;
-		for(int i = 1;i <= rows;i++){
-			rr = new RackRow(this.getContext(), bg, hp, cols);
-			this.addView(rr);
-			rr.setId(this.getChildCount());
-			Activity activity = (Activity)context;
-			activity.registerForContextMenu(rr);
-			rr.setOnTouchListener((OnTouchListener)this.getParent());
-		}
-		//For performance, call after adding rows, but before adding modules.
-		this.setScale(scale);
-		addModule("module_filename",1, 40);
-
 	}
 	
 	
 	public int getRows() {
-		return this.rows;
+		return this.rp.getRows();
 	}
 	
 	public int getHP() {
@@ -145,26 +142,26 @@ public class Rack extends LinearLayout implements Scalable {
 	}
 	
 	public double getScale(){
-		return this.scale;
+		return this.rp.getScale();
 	}
 
 	public void setScale(double scale){
-		this.scale = scale;
+		this.rp.setScale(scale);
 		Scalable child;
 		for(int i = 0;i < this.getChildCount();i++){
 			if (this.getChildAt(i) instanceof Scalable){
 				child = (Scalable)this.getChildAt(i);
-				child.setScale(this.scale);
+				child.setScale(this.rp.getScale());
 			}
 		}
 	}
 	
 	public int getScaledHeight(){
-		return (int)(this.intrinsicHeight * this.scale);
+		return (int)(this.intrinsicHeight * this.rp.getScale());
 	}
 	
 	public int getScaledWidth(){
-		return (int)(this.intrinsicWidth * this.scale);
+		return (int)(this.intrinsicWidth * this.rp.getScale());
 	}
 	
 	public int getTopMargin(){
